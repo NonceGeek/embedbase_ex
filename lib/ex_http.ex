@@ -1,4 +1,4 @@
-defmodule ExHttp do
+defmodule EmbedbaseEx.ExHttp do
   @retries 5
   @default_user_agent "chat_programming"
 

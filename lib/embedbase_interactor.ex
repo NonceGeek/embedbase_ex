@@ -1,4 +1,4 @@
-defmodule EmbedbaseInteractorEx do
+defmodule EmbedbaseEx do
   @moduledoc """
       It's easy to get a prototype up-and-running. But, that's not where it stops. How do you persist data? Which LLM should you use? How can you keep up with the ever advancing pace of AI?
 
@@ -7,72 +7,71 @@ defmodule EmbedbaseInteractorEx do
       > https://embedbase.xyz/
   """
 
-  # use Application
+  alias EmbedbaseEx.ExHttp
 
   @api_url "https://api.embedbase.xyz"
   @default_retries 5
 
   require Logger
 
-  defp api_key() do
-    value = System.fetch_env("api_key")
-    value
+  def embedbase_api() do
+    System.fetch_env("EMBEDBASE_KEY")
   end
 
   # Inserting Data
-  def insert_data(dataset_id, data) when is_list(data) do
+  def insert_data(dataset_id, data, embedbase_api) when is_list(data) do
       url = "#{@api_url}/v1/#{dataset_id}"
       Enum.map(data, fn %{content: content, tag: tag} ->
           body = %{documents: [%{data: content}]}
-          {:ok, %{id: id}} =ExHttp.http_post(url, body, api_key(), @default_retries)
+          {:ok, %{id: id}} =ExHttp.http_post(url, body, embedbase_api, @default_retries)
           {tag, id}
       end)
 
   end
 
-  def insert_data(dataset_id, data) do
+  def insert_data(dataset_id, data, embedbase_api) do
       url = "#{@api_url}/v1/#{dataset_id}"
       body = %{documents: [%{data: data}]}
-      ExHttp.http_post(url, body, api_key(), @default_retries)
+      ExHttp.http_post(url, body, embedbase_api, @default_retries)
   end
 
-  def insert_data(dataset_id, data, metadata) do
+  def insert_data(dataset_id, data, metadata, embedbase_api) do
       url = "#{@api_url}/v1/#{dataset_id}"
       body = %{documents: [%{data: data, metadata: metadata}]}
-      ExHttp.http_post(url, body, api_key(), @default_retries)
+      ExHttp.http_post(url, body, embedbase_api, @default_retries)
   end
 
   # Updating Data
-  def update_data(dataset_id, data, id) do
-     url = "#{@api_url}/v1/#{dataset_id}"
-     body = %{documents: [%{data: data, id: id}]}
-     ExHttp.http_post(url, body, api_key(), @default_retries)
+  def update_data(dataset_id, data, id, embedbase_api) do
+        url = "#{@api_url}/v1/#{dataset_id}"
+        body = %{documents: [%{data: data, id: id}]}
+        ExHttp.http_post(url, body, embedbase_api, @default_retries)
   end
 
   # Using Bing Search
-  def search_data(question, :bing) do
+  def search_data(question, :bing, embedbase_api) do
       url = "#{@api_url}/v1/internet-search"
       body = %{query: question, engine: "bing"}
-      ExHttp.http_post(url, body, api_key(), @default_retries)
+      ExHttp.http_post(url, body, embedbase_api, @default_retries)
   end
 
 
-  def search_data(dataset_id, question) do
+  def search_data(dataset_id, question, embedbase_api) do
       url = "#{@api_url}/v1/#{dataset_id}/search"
       body = %{query: question}
-      ExHttp.http_post(url, body, api_key(), @default_retries)
+      ExHttp.http_post(url, body, embedbase_api, @default_retries)
   end
 
   # Delete data
-  def delete_data(dataset_id, ids) do
+  def delete_data(dataset_id, ids, embedbase_api) do
       url = "#{@api_url}/v1/#{dataset_id}"
       body = %{ids: ids}
-      ExHttp.http_delete(url, body, api_key(), @default_retries)
+      ExHttp.http_delete(url, body, embedbase_api, @default_retries)
   end
 
   # Delete dataset
-  def delete_dataset(dataset_id) do
+  def delete_dataset(dataset_id, embedbase_api) do
      url = "#{@api_url}/v1/#{dataset_id}/clear"
-     ExHttp.http_delete(url, api_key(), @default_retries)
+     ExHttp.http_delete(url, embedbase_api, @default_retries)
   end
 end

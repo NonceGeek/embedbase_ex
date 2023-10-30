@@ -1,12 +1,12 @@
-defmodule EmbedbaseInteractorEx.MixProject do
+defmodule EmbedbaseEx.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :embedbase_interactor_ex,
-      version: "0.1.3",
+      app: :embedbase_ex,
+      version: "0.1.0",
       description: "embedbase interactor elixir sdk",
-      elixir: "~> 1.14",
+      # elixir: "~> 1.11.0",
       start_permanent: Mix.env() == :prod,
       deps: deps(),
       package: package()
@@ -36,7 +36,8 @@ defmodule EmbedbaseInteractorEx.MixProject do
       # {:dep_from_git, git: "https://github.com/elixir-lang/my_dep.git", tag: "0.1.0"}
       {:httpoison, "~> 2.0"},
       {:ex_doc, ">= 0.0.0", only: :dev, runtime: false},
-
+      # struct handler
+      {:ex_struct_translator, "~> 0.1.1"},
       # utils
       {:poison, "~> 3.1"},
     ]
